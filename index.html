@@ -3,149 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LI PUORC (LPC) | LIVE PORTAL</title>
+    <title>LPC | PORTALE UFFICIALE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { clubBlue: '#0047AB', clubDark: '#050505' },
-                    fontFamily: { esport: ['Teko', 'sans-serif'], sans: ['Inter', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        .glow-text { text-shadow: 0 0 15px rgba(0, 71, 171, 0.8); }
-        .stats-card { background: linear-gradient(145deg, #0f0f0f, #050505); border: 1px solid #1a1a1a; }
-        .loading-pulse { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .font-esport { font-family: 'Teko', sans-serif; }
+        .pitch { 
+            background: #1a3017; 
+            border: 2px solid rgba(255,255,255,0.1); 
+            height: 500px; 
+            position: relative; 
+            border-radius: 15px;
+            background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        .player-node { position: absolute; transform: translate(-50%, -50%); text-align: center; width: 80px; transition: all 0.5s ease; }
+        .hidden-panel { display: none; }
     </style>
 </head>
-<body class="bg-clubDark text-white font-sans">
+<body class="bg-[#050505] text-white font-sans">
 
-    <nav class="fixed w-full z-50 bg-black/90 border-b border-clubBlue/30 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <img src="Copilot_20260505_223133.png" alt="LPC" class="w-12 h-12 object-contain" onerror="this.src='https://via.placeholder.com/50/0047AB/FFFFFF?text=LPC'">
-                <span class="font-esport text-4xl tracking-tighter glow-text">LI PUORC</span>
-            </div>
-            <div id="connection-status" class="text-[10px] font-bold uppercase px-3 py-1 bg-red-600 rounded-full animate-pulse">
-                EA Offline
-            </div>
-        </div>
-    </nav>
-
-    <section class="min-h-screen flex items-center justify-center pt-20 px-4 bg-[url('https://www.ea.com/ea-sports-fc/build/7796677f/images/fc-background-large.jpg')] bg-cover bg-fixed">
-        <div class="text-center">
-            <h1 class="font-esport text-8xl md:text-[12rem] leading-none mb-4 italic tracking-tighter">FINO ALLA FINE</h1>
-            <p class="text-blue-500 font-bold tracking-[0.5em] uppercase text-sm">Official EA Sports FC Portal</p>
-        </div>
-    </section>
-
-    <section id="stats" class="py-20 bg-black">
-        <div class="max-w-7xl mx-auto px-6">
-            <h2 class="font-esport text-5xl mb-10 text-center uppercase tracking-widest text-gray-400">Live Club Records</h2>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div class="stats-card p-8 text-center rounded-2xl">
-                    <div id="live-wins" class="text-6xl font-esport text-green-500 loading-pulse">---</div>
-                    <p class="text-xs uppercase text-gray-500 font-black mt-2">Vittorie</p>
-                </div>
-                <div class="stats-card p-8 text-center rounded-2xl">
-                    <div id="live-draws" class="text-6xl font-esport text-yellow-500 loading-pulse">---</div>
-                    <p class="text-xs uppercase text-gray-500 font-black mt-2">Pareggi</p>
-                </div>
-                <div class="stats-card p-8 text-center rounded-2xl">
-                    <div id="live-losses" class="text-6xl font-esport text-red-500 loading-pulse">---</div>
-                    <p class="text-xs uppercase text-gray-500 font-black mt-2">Sconfitte</p>
-                </div>
-                <div class="stats-card p-8 text-center rounded-2xl border-blue-600/50">
-                    <div id="live-goals" class="text-6xl font-esport text-white loading-pulse">---</div>
-                    <p class="text-xs uppercase text-blue-500 font-black mt-2">Gol Fatti</p>
-                </div>
-                <div class="stats-card p-8 text-center rounded-2xl">
-                    <div id="live-against" class="text-6xl font-esport text-gray-400 loading-pulse">---</div>
-                    <p class="text-xs uppercase text-gray-500 font-black mt-2">Gol Subiti</p>
-                </div>
+    <div id="auth-screen" class="fixed inset-0 bg-black z-[100] flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-neutral-900 p-8 rounded-3xl border border-blue-600/30">
+            <img src="Copilot_20260505_223133.png" class="w-20 mx-auto mb-6" onerror="this.src='https://via.placeholder.com/80/0047AB/FFFFFF?text=LPC'">
+            <h2 class="font-esport text-5xl text-center mb-8 italic tracking-tighter uppercase">Accesso Club</h2>
+            <div class="space-y-4">
+                <input type="text" id="id-input" placeholder="ID EA (es: Swuegghypep)" class="w-full bg-black border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500 uppercase font-bold">
+                <input type="password" id="pass-input" placeholder="Password (scegline una)" class="w-full bg-black border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500">
+                <button onclick="handleAuth()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-blue-500 transition">Entra nel Portale</button>
+                <p id="auth-msg" class="text-[10px] text-center text-gray-500 uppercase font-bold tracking-widest">Sincronizzazione rosa EA in corso...</p>
             </div>
         </div>
-    </section>
+    </div>
 
-    <section id="roster" class="py-20">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex items-center justify-between mb-12 border-b border-gray-800 pb-6">
-                <h2 class="font-esport text-6xl uppercase tracking-tighter">Membri Club</h2>
-                <div class="text-blue-500 font-bold uppercase text-sm tracking-widest">Sincronizzazione Live Attiva</div>
+    <div id="app" class="hidden-panel">
+        <nav class="h-20 border-b border-white/5 flex items-center justify-between px-8 bg-black fixed w-full z-50">
+            <div class="flex items-center gap-3">
+                <img src="Copilot_20260505_223133.png" class="w-10 h-10">
+                <span class="font-esport text-3xl text-blue-500" id="display-user">LPC</span>
             </div>
-            <div id="roster-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="p-6 bg-neutral-900 animate-pulse rounded-lg border border-gray-800">Caricamento rosa...</div>
-            </div>
-        </div>
-    </section>
+            <button onclick="location.reload()" class="text-[10px] font-bold text-gray-500 uppercase border border-white/10 px-4 py-2 rounded-full">Logout</button>
+        </nav>
 
-    <footer class="py-10 text-center text-gray-700 text-[10px] uppercase font-bold tracking-[1em]">
-        LPC &copy; 2026 | Non affiliato a EA Sports
-    </footer>
+        <main class="pt-28 px-6 max-w-7xl mx-auto grid lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-8">
+                <h3 class="font-esport text-5xl italic mb-4">Campo di Gioco</h3>
+                <div class="pitch shadow-2xl" id="pitch"></div>
+            </div>
+
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-neutral-900 p-6 rounded-2xl border border-white/5">
+                    <h4 class="text-xs font-black uppercase text-gray-500 mb-4 tracking-widest">Sei disponibile?</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="sendPresence('PRESENT')" class="bg-green-600 py-3 rounded-lg font-bold uppercase text-[10px]">Presente</button>
+                        <button onclick="sendPresence('ABSENT')" class="bg-red-600 py-3 rounded-lg font-bold uppercase text-[10px]">Assente</button>
+                    </div>
+                </div>
+
+                <div id="admin-box" class="hidden-panel bg-blue-900/10 p-6 rounded-2xl border border-blue-500/20">
+                    <h4 class="font-esport text-3xl text-blue-400 mb-4">Dirigenza</h4>
+                    <div class="space-y-4">
+                        <div class="bg-black/50 p-4 rounded-xl max-h-[150px] overflow-y-auto border border-white/5 text-[10px]" id="presence-list">
+                            Attendendo presenze...
+                        </div>
+                        <select onchange="updatePitch(this.value)" class="w-full bg-black border border-white/10 p-3 rounded-lg text-xs uppercase font-bold">
+                            <option value="433">Modulo: 4-3-3</option>
+                            <option value="352">Modulo: 3-5-2</option>
+                            <option value="442">Modulo: 4-4-2</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script>
-        async function fetchEAData() {
-            const clubId = "48439";
-            const platform = "common-gen5";
-            
-            // Usiamo AllOrigins come ponte per leggere la pagina EA senza blocchi CORS
+        // DATI SUPABASE (SOSTITUISCI SE NECESSARIO)
+        const URL = "https://uewumdudliyzjdhsaxmq.supabase.co";
+        const KEY = "Dnp43PbSGOVw_Qae0mQSXw_AgXLHRvb"; 
+        const _supabase = supabase.createClient(URL, KEY);
+
+        let rosaEA = [];
+        let myID = "";
+
+        // 1. SINCRONIZZA ROSA REALE DA EA
+        async function getEARoster() {
             const proxy = "https://api.allorigins.win/get?url=";
-            const target = encodeURIComponent(`https://www.ea.com/games/ea-sports-fc/clubs/overview?clubId=${clubId}&platform=${platform}`);
-
+            const target = encodeURIComponent("https://www.ea.com/it-it/games/ea-sports-fc/clubs/member-list?clubId=48439&platform=common-gen5");
+            
             try {
-                const response = await fetch(proxy + target);
-                const data = await response.json();
-                
-                // Creiamo un parser per leggere l'HTML ricevuto
+                const res = await fetch(proxy + target);
+                const json = await res.json();
                 const parser = new DOMParser();
-                const doc = parser.parseFromString(data.contents, "text/html");
-
-                // AGGIORNAMENTO STATISTICHE (Basato sulla struttura EA attuale)
-                // Usiamo valori di fallback se EA non risponde istantaneamente
-                document.getElementById('live-wins').innerText = "436";
-                document.getElementById('live-draws').innerText = "108";
-                document.getElementById('live-losses').innerText = "395";
-                document.getElementById('live-goals').innerText = "2520";
-                document.getElementById('live-against').innerText = "2373";
-
-                // AGGIORNAMENTO ROSTER
-                // Nota: Questa parte cerca i nomi dei giocatori nel codice EA
-                const rosterBox = document.getElementById('roster-container');
-                rosterBox.innerHTML = ''; // Pulisce il caricamento
-
-                // Lista Manuale di sicurezza (sempre presente) + Aggiunta dinamica
-                const baseSquad = ["Swuegghypep", "lorenzo04072001", "pdamy17", "AESF-Maxcacr7", "alessiojjj", "Andrea08200309", "angelobada13", "atainol", "cujigen", "ErChappo98", "Fabio_1995_1", "fkugab", "PCS_Gabrox-btw", "scoiattolino13", "STR_Pietro", "STR-Domy"];
-
-                baseSquad.forEach(player => {
-                    rosterBox.innerHTML += `
-                        <div class="stats-card p-5 rounded-lg border-l-4 border-blue-600 hover:scale-105 transition-transform cursor-default">
-                            <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-1">Player</p>
-                            <h4 class="font-esport text-2xl tracking-wider">${player}</h4>
-                        </div>
-                    `;
-                });
-
-                // Cambia stato connessione
-                const status = document.getElementById('connection-status');
-                status.innerText = "EA Online";
-                status.classList.replace('bg-red-600', 'bg-green-600');
+                const doc = parser.parseFromString(json.contents, "text/html");
                 
-                // Ferma il lampeggio
-                document.querySelectorAll('.loading-pulse').forEach(el => el.classList.remove('loading-pulse'));
-
-            } catch (error) {
-                console.error("Errore automazione:", error);
-                document.getElementById('connection-status').innerText = "EA Timeout - Usando Cache";
+                // Estrae i nomi dei membri (EA usa classi specifiche)
+                const members = doc.querySelectorAll('.MemberTableRow_name__pE60F');
+                rosaEA = Array.from(members).map(m => m.innerText.toLowerCase().trim());
+                
+                document.getElementById('auth-msg').innerText = "Rosa sincronizzata. Pronto all'accesso.";
+                console.log("Rosa EA:", rosaEA);
+            } catch (e) {
+                console.error("Errore Rosa EA:", e);
+                document.getElementById('auth-msg').innerText = "Errore Sincro EA. Accesso forzato attivo.";
             }
         }
 
-        // Lancia l'automazione al caricamento
-        window.onload = fetchEAData;
+        // 2. GESTIONE ACCESSO
+        async function handleAuth() {
+            const id = document.getElementById('id-input').value.toLowerCase().trim();
+            const pass = document.getElementById('pass-input').value;
+
+            if (id === "admin" && pass === "dirigenzapuorc") {
+                myID = "ADMIN";
+                launch();
+                return;
+            }
+
+            // Se la rosa è stata caricata, controlla se l'utente esiste su EA
+            if (rosaEA.length > 0 && !rosaEA.includes(id)) {
+                alert("Non risulti nella rosa ufficiale EA dei LI PUORC!");
+                return;
+            }
+
+            // Controllo Password su Supabase
+            const { data } = await _supabase.from('profili').select('*').eq('id', id).single();
+
+            if (!data) {
+                // Registrazione automatica prima volta
+                await _supabase.from('profili').insert([{ id: id, password: pass }]);
+                myID = id;
+                launch();
+            } else if (data.password === pass) {
+                myID = id;
+                launch();
+            } else {
+                alert("Password Errata!");
+            }
+        }
+
+        function launch() {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('display-user').innerText = myID.toUpperCase();
+            
+            if(myID === "ADMIN") {
+                document.getElementById('admin-box').style.display = 'block';
+                setInterval(loadAdminData, 3000); // Aggiorna presenze ogni 3 secondi
+            }
+            updatePitch("433");
+        }
+
+        async function sendPresence(status) {
+            await _supabase.from('presenze').upsert({ giocatore: myID, stato: status });
+            alert("Presenza aggiornata con successo!");
+        }
+
+        async function loadAdminData() {
+            const { data } = await _supabase.from('presenze').select('*');
+            document.getElementById('presence-list').innerHTML = data.map(p => `
+                <div class="flex justify-between py-1 border-b border-white/5">
+                    <span class="font-bold uppercase">${p.giocatore}</span>
+                    <span class="${p.stato === 'PRESENT' ? 'text-green-500' : 'text-red-500'} font-black">${p.stato}</span>
+                </div>
+            `).join('');
+        }
+
+        function updatePitch(mod) {
+            const p = document.getElementById('pitch');
+            p.innerHTML = '';
+            let coords = [];
+            
+            if(mod === "433") {
+                coords = [
+                    {t:'90%', l:'50%', r:'POR'}, {t:'70%', l:'30%', r:'DC'}, {t:'70%', l:'70%', r:'DC'},
+                    {t:'75%', l:'10%', r:'TS'}, {t:'75%', l:'90%', r:'TD'}, {t:'45%', l:'50%', r:'CDC'},
+                    {t:'35%', l:'30%', r:'CC'}, {t:'35%', l:'70%', r:'CC'}, {t:'15%', l:'15%', r:'AS'},
+                    {t:'15%', l:'85%', r:'AD'}, {t:'10%', l:'50%', r:'ATT'}
+                ];
+            }
+            // Puoi aggiungere 352 e 442 qui...
+
+            coords.forEach(c => {
+                p.innerHTML += `
+                    <div class="player-node" style="top:${c.t}; left:${c.l}">
+                        <div class="w-8 h-8 bg-blue-600 rounded-full border-2 border-white mx-auto flex items-center justify-center font-black text-[9px] shadow-lg shadow-blue-900/50">${c.r}</div>
+                        <p class="text-[7px] text-gray-400 font-bold uppercase mt-1">Titolare</p>
+                    </div>
+                `;
+            });
+        }
+
+        // Avvia Sincronizzazione Rosa al caricamento
+        window.onload = getEARoster;
     </script>
 </body>
 </html>
