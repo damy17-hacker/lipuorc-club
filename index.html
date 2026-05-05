@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LPC | OFFICIAL PORTAL</title>
+    <title>LPC | PORTALE GESTIONALE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
@@ -13,86 +13,79 @@
         .pitch { 
             background: linear-gradient(to bottom, #1a3c15, #142a10); 
             border: 2px solid rgba(255,255,255,0.1); 
-            height: 520px; 
-            position: relative; 
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            height: 520px; position: relative; border-radius: 20px; overflow: hidden;
         }
-        .player-node { position: absolute; transform: translate(-50%, -50%); text-align: center; width: 90px; transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+        .player-node { position: absolute; transform: translate(-50%, -50%); text-align: center; width: 90px; transition: all 0.7s ease; }
         .hidden-panel { display: none; }
-        input:focus { border-color: #0047AB !important; box-shadow: 0 0 10px rgba(0, 71, 171, 0.3); }
-        .btn-glow:hover { box-shadow: 0 0 20px rgba(37, 99, 235, 0.4); transform: translateY(-2px); }
     </style>
 </head>
 <body>
 
     <div id="auth-screen" class="fixed inset-0 bg-black z-[100] flex items-center justify-center p-4">
-        <div class="max-w-md w-full bg-neutral-900 p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
-            <div class="text-center mb-8">
-                <img src="Copilot_20260505_223133.png" class="w-24 mx-auto mb-4" onerror="this.src='https://via.placeholder.com/100/0047AB/FFFFFF?text=LPC'">
-                <h1 class="font-esport text-6xl tracking-tighter italic uppercase">LI PUORC</h1>
-                <p id="auth-status" class="text-[10px] text-blue-500 font-black uppercase tracking-[0.3em] mt-2 italic">Sincronizzazione API EA...</p>
-            </div>
-            
-            <div class="space-y-4">
-                <input type="text" id="id-input" placeholder="NICKNAME EA" class="w-full bg-black border border-white/10 p-5 rounded-2xl outline-none transition-all uppercase font-bold text-sm tracking-widest">
-                <input type="password" id="pass-input" placeholder="PASSWORD" class="w-full bg-black border border-white/10 p-5 rounded-2xl outline-none transition-all font-bold text-sm tracking-widest">
-                <button onclick="handleAuth()" class="w-full bg-blue-600 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-sm btn-glow transition-all">Accedi al Club</button>
-                <p class="text-[9px] text-gray-600 text-center uppercase font-bold">Prima volta? Inserisci il nick e scegli una pass</p>
+        <div class="max-w-md w-full bg-neutral-900 p-10 rounded-[2.5rem] border border-white/5 shadow-2xl text-center">
+            <img src="Copilot_20260505_223133.png" class="w-24 mx-auto mb-4" onerror="this.src='https://via.placeholder.com/100/0047AB/FFFFFF?text=LPC'">
+            <h1 class="font-esport text-6xl italic uppercase">LI PUORC</h1>
+            <p id="auth-status" class="text-[10px] text-blue-500 font-black uppercase mb-8">Sincronizzazione API EA...</p>
+            <div class="space-y-4 text-left">
+                <input type="text" id="id-input" placeholder="ID EA" class="w-full bg-black border border-white/10 p-5 rounded-2xl outline-none uppercase font-bold text-sm">
+                <input type="password" id="pass-input" placeholder="PASSWORD" class="w-full bg-black border border-white/10 p-5 rounded-2xl outline-none font-bold text-sm">
+                <button onclick="handleAuth()" class="w-full bg-blue-600 py-5 rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-blue-500 transition-all">Accedi</button>
             </div>
         </div>
     </div>
 
     <div id="app" class="hidden-panel">
-        <nav class="h-24 border-b border-white/5 flex items-center justify-between px-10 bg-black/50 backdrop-blur-xl fixed w-full z-50">
+        <nav class="h-24 border-b border-white/5 flex items-center justify-between px-10 bg-black/80 backdrop-blur-xl fixed w-full z-50">
             <div class="flex items-center gap-4">
                 <img src="Copilot_20260505_223133.png" class="w-12 h-12">
-                <div>
-                    <span class="font-esport text-4xl text-blue-600 leading-none block uppercase italic" id="display-user">PLAYER</span>
-                    <span class="text-[8px] font-black text-gray-500 uppercase tracking-widest">Official Member</span>
-                </div>
+                <span class="font-esport text-4xl text-blue-600 uppercase italic" id="display-user">PLAYER</span>
             </div>
-            <button onclick="location.reload()" class="text-[10px] font-black text-gray-500 border border-white/10 px-6 py-3 rounded-full hover:bg-white/5 transition uppercase">Logout</button>
+            <button onclick="location.reload()" class="text-[10px] font-black text-gray-500 border border-white/10 px-6 py-3 rounded-full">Logout</button>
         </nav>
 
         <main class="pt-32 pb-10 px-8 max-w-[1600px] mx-auto grid lg:grid-cols-12 gap-10">
             <div class="lg:col-span-8 space-y-6">
-                <div class="flex justify-between items-end px-2">
-                    <h3 class="font-esport text-5xl italic uppercase tracking-tighter">Lineup Stasera</h3>
-                    <div id="active-mod" class="bg-blue-600/10 text-blue-500 px-4 py-1 rounded-full text-[10px] font-black border border-blue-500/20 uppercase tracking-widest">Modulo: 4-3-3</div>
+                <div class="flex justify-between items-end">
+                    <h3 class="font-esport text-5xl italic uppercase">Formazione Ufficiale</h3>
+                    <div id="active-mod-label" class="text-blue-500 font-black text-xs uppercase italic tracking-widest">Modulo: --</div>
                 </div>
-                <div class="pitch shadow-2xl shadow-blue-900/10" id="pitch">
-                    <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
-                        <img src="Copilot_20260505_223133.png" class="w-80">
-                    </div>
-                </div>
+                <div class="pitch shadow-2xl" id="pitch"></div>
             </div>
 
-            <div class="lg:col-span-4 space-y-8">
-                <div class="bg-neutral-900/50 p-8 rounded-[2rem] border border-white/5">
-                    <h4 class="text-[10px] font-black uppercase text-gray-500 mb-6 tracking-[0.3em] italic">Disponibilità Match</h4>
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-blue-600/10 p-6 rounded-3xl border border-blue-500/20">
+                    <h4 class="text-[10px] font-black uppercase text-blue-500 mb-2 italic">Prossimo Match</h4>
+                    <p id="match-info" class="font-esport text-3xl tracking-wider uppercase italic">Caricamento...</p>
+                    <p id="match-time" class="text-xs font-bold text-gray-400 mt-1">--:--</p>
+                </div>
+
+                <div class="bg-neutral-900/50 p-6 rounded-3xl border border-white/5">
+                    <h4 class="text-[10px] font-black uppercase text-gray-500 mb-4 italic tracking-widest">La tua presenza</h4>
                     <div class="grid grid-cols-2 gap-4">
-                        <button onclick="savePresence('PRESENT')" class="bg-green-600 hover:bg-green-500 py-4 rounded-2xl font-black uppercase text-xs transition-all shadow-lg shadow-green-900/20">Presente</button>
-                        <button onclick="savePresence('ABSENT')" class="bg-red-600 hover:bg-red-500 py-4 rounded-2xl font-black uppercase text-xs transition-all shadow-lg shadow-red-900/20">Assente</button>
+                        <button onclick="savePresence('PRESENT')" class="bg-green-600 py-4 rounded-xl font-black uppercase text-[10px]">C'è</button>
+                        <button onclick="savePresence('ABSENT')" class="bg-red-600 py-4 rounded-xl font-black uppercase text-[10px]">No</button>
                     </div>
                 </div>
 
-                <div id="admin-panel" class="hidden-panel bg-blue-600/5 p-8 rounded-[2rem] border border-blue-600/20 shadow-2xl shadow-blue-900/10">
-                    <h4 class="font-esport text-4xl text-blue-500 mb-6 italic uppercase">Pannello Dirigenza</h4>
+                <div id="admin-panel" class="hidden-panel bg-neutral-800 p-8 rounded-[2.5rem] border border-blue-500/30">
+                    <h4 class="font-esport text-4xl text-blue-400 mb-6 italic uppercase">Gestione Dirigenza</h4>
                     <div class="space-y-6">
-                        <div class="bg-black/60 p-5 rounded-2xl border border-white/5">
-                            <p class="text-[9px] font-black text-blue-500 uppercase mb-4 tracking-widest">Appello Giocatori:</p>
-                            <div id="admin-presence-list" class="space-y-2 max-h-[200px] overflow-y-auto pr-2 text-xs">
-                                </div>
+                        <div class="bg-black/40 p-4 rounded-2xl border border-white/5">
+                            <p class="text-[9px] font-black text-blue-500 uppercase mb-3 italic">Appello Live:</p>
+                            <div id="presence-list" class="space-y-1 text-[10px]"></div>
                         </div>
                         <div class="space-y-2">
-                            <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Cambia Formazione:</p>
-                            <select id="mod-selector" onchange="changeFormation(this.value)" class="w-full bg-black border border-white/10 p-4 rounded-xl text-xs font-bold uppercase outline-none focus:border-blue-500">
-                                <option value="433">4 - 3 - 3 (Classico)</option>
-                                <option value="352">3 - 5 - 2 (Offensivo)</option>
-                                <option value="442">4 - 4 - 2 (Standard)</option>
+                            <p class="text-[9px] font-black text-gray-500 uppercase italic">Cambia Modulo:</p>
+                            <select onchange="updateDatabaseFormation(this.value)" class="w-full bg-black border border-white/10 p-3 rounded-xl text-xs font-bold uppercase outline-none">
+                                <option value="433">4-3-3</option>
+                                <option value="352">3-5-2</option>
+                                <option value="442">4-4-2</option>
                             </select>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-[9px] font-black text-gray-500 uppercase italic">Imposta Match:</p>
+                            <input type="text" id="admin-match-input" placeholder="Vs Team" class="w-full bg-black border border-white/10 p-3 rounded-xl text-xs font-bold mb-2 outline-none">
+                            <button onclick="updateMatch()" class="w-full bg-blue-600 py-3 rounded-xl font-black text-[10px] uppercase">Pubblica Match</button>
                         </div>
                     </div>
                 </div>
@@ -101,7 +94,6 @@
     </div>
 
     <script>
-        // CONFIGURAZIONE SUPABASE
         const SB_URL = "https://uewumdudliyzjdhsaxmq.supabase.co";
         const SB_KEY = "Dnp43PbSGOVw_Qae0mQSXw_AgXLHRvb";
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
@@ -109,123 +101,114 @@
         let rosterEA = [];
         let myID = "";
 
-        // 1. CARICAMENTO API EA (STILE PROFESSIONALE)
         async function syncEA() {
-            const status = document.getElementById('auth-status');
-            const clubId = "48439";
-            const platform = "common-gen5";
             const proxy = "https://api.allorigins.win/get?url=";
-            const eaApi = `https://proclubs.ea.com/api/fc/members/search?platform=${platform}&clubId=${clubId}`;
-
+            const eaApi = `https://proclubs.ea.com/api/fc/members/search?platform=common-gen5&clubId=48439`;
             try {
-                const response = await fetch(proxy + encodeURIComponent(eaApi));
-                const data = await response.json();
-                const membersData = JSON.parse(data.contents);
-                
-                if (membersData && membersData.members) {
-                    rosterEA = membersData.members.map(m => m.name.toLowerCase().trim());
-                    status.innerHTML = "✅ API EA COLLEGATA";
-                    status.className = "text-[10px] text-green-500 font-black uppercase tracking-[0.3em] mt-2 italic";
-                }
+                const res = await fetch(proxy + encodeURIComponent(eaApi));
+                const json = await res.json();
+                const data = JSON.parse(json.contents);
+                if (data && data.members) rosterEA = data.members.map(m => m.name.toLowerCase().trim());
+                document.getElementById('auth-status').innerText = "✅ API EA COLLEGATA";
             } catch (e) {
-                console.warn("EA API Offline, uso lista fissa.");
-                rosterEA = ["swuegghypep", "lorenzo04072001", "pdamy17", "aesf-maxcacr7", "alessiojjj", "andrea08200309", "angelobada13", "atainol", "cujigen", "erchappo98", "fabio_1995_1", "fkugab", "pcs_gabrox-btw", "scoiattolino13", "str_pietro", "str-domy"];
-                status.innerHTML = "⚠️ MODALITÀ CLUB ATTIVA";
+                document.getElementById('auth-status').innerText = "⚠️ MODALITÀ CLUB ATTIVA";
             }
         }
 
-        // 2. GESTIONE LOGIN
         async function handleAuth() {
             const id = document.getElementById('id-input').value.toLowerCase().trim();
             const pass = document.getElementById('pass-input').value;
-
-            if (!id || !pass) return alert("Inserisci dati!");
-
-            if (id === "admin" && pass === "dirigenzapuorc") {
-                myID = "ADMIN";
-                return launch();
-            }
-
-            // Controllo se il giocatore esiste nella rosa
-            if (rosterEA.length > 0 && !rosterEA.includes(id)) {
-                return alert("Non sei nella rosa ufficiale dei LI PUORC!");
-            }
-
-            // Controllo Password su Supabase
+            if (id === "admin" && pass === "dirigenzapuorc") { myID = "ADMIN"; return launch(); }
+            if (rosterEA.length > 0 && !rosterEA.includes(id)) return alert("ID non in rosa EA!");
+            
             const { data } = await _supabase.from('profili').select('*').eq('id', id).single();
-
             if (!data) {
-                // Registrazione automatica
                 await _supabase.from('profili').insert([{ id, password: pass }]);
-                myID = id;
-                launch();
+                myID = id; launch();
             } else if (data.password === pass) {
-                myID = id;
-                launch();
-            } else {
-                alert("Password Errata!");
-            }
+                myID = id; launch();
+            } else { alert("Password errata!"); }
         }
 
         function launch() {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
             document.getElementById('display-user').innerText = myID;
-            
             if (myID === "ADMIN") {
                 document.getElementById('admin-panel').style.display = 'block';
-                loadPresences();
-                setInterval(loadPresences, 5000);
+                setInterval(loadAdminData, 4000);
             }
-            changeFormation("433");
+            // Sincronizza i dati globali per tutti
+            setInterval(syncGlobalData, 5000);
+            syncGlobalData();
         }
 
-        // 3. LOGICA PRESENZE
+        // --- SINCRONIZZAZIONE DATI GLOBALI (MATCH E FORMAZIONE) ---
+        async function syncGlobalData() {
+            // Leggi Formazione
+            const { data: f } = await _supabase.from('formazione').select('*').eq('id', 1).single();
+            if(f) renderPitch(f.modulo);
+
+            // Leggi Match
+            const { data: m } = await _supabase.from('calendario').select('*').eq('id', 1).single();
+            if(m) {
+                document.getElementById('match-info').innerText = m.prossimo_match;
+                document.getElementById('match-time').innerText = m.data_ora || "--:--";
+            }
+        }
+
+        async function updateDatabaseFormation(mod) {
+            await _supabase.from('formazione').update({ modulo: mod }).eq('id', 1);
+            renderPitch(mod);
+        }
+
+        async function updateMatch() {
+            const info = document.getElementById('admin-match-input').value;
+            const time = prompt("Inserisci ora (es. 23:30)");
+            await _supabase.from('calendario').update({ prossimo_match: info, data_ora: time }).eq('id', 1);
+            alert("Match aggiornato per tutti!");
+        }
+
         async function savePresence(status) {
             await _supabase.from('presenze').upsert({ giocatore: myID, stato: status });
-            alert("Stato aggiornato: " + status);
+            alert("Presenza inviata!");
         }
 
-        async function loadPresences() {
+        async function loadAdminData() {
             const { data } = await _supabase.from('presenze').select('*');
-            const list = document.getElementById('admin-presence-list');
-            list.innerHTML = data.map(p => `
-                <div class="flex justify-between items-center py-2 border-b border-white/5 uppercase font-bold">
+            document.getElementById('presence-list').innerHTML = data.map(p => `
+                <div class="flex justify-between border-b border-white/5 py-1 uppercase">
                     <span>${p.giocatore}</span>
-                    <span class="${p.stato === 'PRESENT' ? 'text-green-500' : 'text-red-500'} text-[9px]">${p.stato}</span>
+                    <span class="${p.stato === 'PRESENT' ? 'text-green-500' : 'text-red-500'} font-black">${p.stato}</span>
                 </div>
             `).join('');
         }
 
-        // 4. LOGICA CAMPO
-        function changeFormation(mod) {
-            const pitch = document.getElementById('pitch');
-            document.getElementById('active-mod').innerText = "Modulo: " + mod;
-            pitch.innerHTML = '<div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none"><img src="Copilot_20260505_223133.png" class="w-80"></div>';
-            
-            let pos = [];
-            if (mod === "433") {
-                pos = [
-                    {t:'90%', l:'50%', r:'GK'}, {t:'72%', l:'32%', r:'DC'}, {t:'72%', l:'68%', r:'DC'},
-                    {t:'75%', l:'12%', r:'TS'}, {t:'75%', l:'88%', r:'TD'}, {t:'48%', l:'50%', r:'CDC'},
-                    {t:'38%', l:'30%', r:'CC'}, {t:'38%', l:'70%', r:'CC'}, {t:'18%', l:'18%', r:'AS'},
-                    {t:'18%', l:'82%', r:'AD'}, {t:'12%', l:'50%', r:'ATT'}
+        function renderPitch(mod) {
+            const p = document.getElementById('pitch');
+            document.getElementById('active-mod-label').innerText = "Modulo: " + mod;
+            p.innerHTML = '';
+            let coords = [];
+            if(mod === "433") {
+                coords = [
+                    {t:'90%', l:'50%', r:'GK'}, {t:'72%', l:'35%', r:'DC'}, {t:'72%', l:'65%', r:'DC'},
+                    {t:'75%', l:'15%', r:'TS'}, {t:'75%', l:'85%', r:'TD'}, {t:'48%', l:'50%', r:'CDC'},
+                    {t:'38%', l:'35%', r:'CC'}, {t:'38%', l:'65%', r:'CC'}, {t:'18%', l:'20%', r:'AS'},
+                    {t:'18%', l:'80%', r:'AD'}, {t:'12%', l:'50%', r:'ATT'}
                 ];
             } else if (mod === "352") {
-                pos = [
+                coords = [
                     {t:'90%', l:'50%', r:'GK'}, {t:'75%', l:'30%', r:'DC'}, {t:'75%', l:'50%', r:'DC'}, {t:'75%', l:'70%', r:'DC'},
-                    {t:'45%', l:'12%', r:'ES'}, {t:'50%', l:'35%', r:'CC'}, {t:'50%', l:'50%', r:'CDC'}, {t:'50%', l:'65%', r:'CC'}, {t:'45%', l:'88%', r:'ED'},
-                    {t:'18%', l:'40%', r:'ATT'}, {t:'18%', l:'60%', r:'ATT'}
+                    {t:'45%', l:'15%', r:'ES'}, {t:'50%', l:'38%', r:'CC'}, {t:'50%', l:'50%', r:'CDC'}, {t:'50%', l:'62%', r:'CC'}, {t:'45%', l:'85%', r:'ED'},
+                    {t:'18%', l:'42%', r:'ATT'}, {t:'18%', l:'58%', r:'ATT'}
                 ];
             }
 
-            pos.forEach(p => {
-                pitch.innerHTML += `
-                    <div class="player-node" style="top:${p.t}; left:${p.l}">
-                        <div class="w-10 h-10 bg-blue-700 rounded-full border-2 border-white/80 shadow-2xl flex items-center justify-center font-black text-[10px] mx-auto">${p.r}</div>
-                        <div class="bg-black/80 px-2 py-0.5 rounded mt-1 border border-white/10">
-                            <p class="text-[7px] font-black uppercase text-white truncate">Titolare</p>
-                        </div>
+            coords.forEach(c => {
+                p.innerHTML += `
+                    <div class="player-node" style="top:${c.t}; left:${c.l}">
+                        <div class="w-10 h-10 bg-blue-600 rounded-full border-2 border-white mx-auto flex items-center justify-center font-black text-[10px] shadow-xl">${c.r}</div>
+                        <p class="text-[7px] text-gray-400 font-bold uppercase mt-1">TITOLARE</p>
                     </div>
                 `;
             });
