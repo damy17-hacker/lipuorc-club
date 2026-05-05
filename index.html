@@ -3,75 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LPC | PORTALE UFFICIALE</title>
+    <title>LPC | OFFICIAL PORTAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
         .font-esport { font-family: 'Teko', sans-serif; }
+        body { background-color: #050505; color: white; font-family: 'Inter', sans-serif; }
         .pitch { 
-            background: #1a3017; 
+            background: linear-gradient(to bottom, #1a3c15, #142a10); 
             border: 2px solid rgba(255,255,255,0.1); 
-            height: 500px; 
+            height: 520px; 
             position: relative; 
-            border-radius: 15px;
-            background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-        .player-node { position: absolute; transform: translate(-50%, -50%); text-align: center; width: 80px; transition: all 0.5s ease; }
+        .player-node { position: absolute; transform: translate(-50%, -50%); text-align: center; width: 90px; transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
         .hidden-panel { display: none; }
+        input:focus { border-color: #0047AB !important; box-shadow: 0 0 10px rgba(0, 71, 171, 0.3); }
+        .btn-glow:hover { box-shadow: 0 0 20px rgba(37, 99, 235, 0.4); transform: translateY(-2px); }
     </style>
 </head>
-<body class="bg-[#050505] text-white font-sans">
+<body>
 
     <div id="auth-screen" class="fixed inset-0 bg-black z-[100] flex items-center justify-center p-4">
-        <div class="max-w-md w-full bg-neutral-900 p-8 rounded-3xl border border-blue-600/30">
-            <img src="Copilot_20260505_223133.png" class="w-20 mx-auto mb-6" onerror="this.src='https://via.placeholder.com/80/0047AB/FFFFFF?text=LPC'">
-            <h2 class="font-esport text-5xl text-center mb-8 italic tracking-tighter uppercase">Accesso Club</h2>
+        <div class="max-w-md w-full bg-neutral-900 p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
+            <div class="text-center mb-8">
+                <img src="Copilot_20260505_223133.png" class="w-24 mx-auto mb-4" onerror="this.src='https://via.placeholder.com/100/0047AB/FFFFFF?text=LPC'">
+                <h1 class="font-esport text-6xl tracking-tighter italic uppercase">LI PUORC</h1>
+                <p id="auth-status" class="text-[10px] text-blue-500 font-black uppercase tracking-[0.3em] mt-2 italic">Sincronizzazione API EA...</p>
+            </div>
+            
             <div class="space-y-4">
-                <input type="text" id="id-input" placeholder="ID EA (es: Swuegghypep)" class="w-full bg-black border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500 uppercase font-bold">
-                <input type="password" id="pass-input" placeholder="Password (scegline una)" class="w-full bg-black border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500">
-                <button onclick="handleAuth()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-blue-500 transition">Entra nel Portale</button>
-                <p id="auth-msg" class="text-[10px] text-center text-gray-500 uppercase font-bold tracking-widest">Sincronizzazione rosa EA in corso...</p>
+                <input type="text" id="id-input" placeholder="NICKNAME EA" class="w-full bg-black border border-white/10 p-5 rounded-2xl outline-none transition-all uppercase font-bold text-sm tracking-widest">
+                <input type="password" id="pass-input" placeholder="PASSWORD" class="w-full bg-black border border-white/10 p-5 rounded-2xl outline-none transition-all font-bold text-sm tracking-widest">
+                <button onclick="handleAuth()" class="w-full bg-blue-600 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-sm btn-glow transition-all">Accedi al Club</button>
+                <p class="text-[9px] text-gray-600 text-center uppercase font-bold">Prima volta? Inserisci il nick e scegli una pass</p>
             </div>
         </div>
     </div>
 
     <div id="app" class="hidden-panel">
-        <nav class="h-20 border-b border-white/5 flex items-center justify-between px-8 bg-black fixed w-full z-50">
-            <div class="flex items-center gap-3">
-                <img src="Copilot_20260505_223133.png" class="w-10 h-10">
-                <span class="font-esport text-3xl text-blue-500" id="display-user">LPC</span>
+        <nav class="h-24 border-b border-white/5 flex items-center justify-between px-10 bg-black/50 backdrop-blur-xl fixed w-full z-50">
+            <div class="flex items-center gap-4">
+                <img src="Copilot_20260505_223133.png" class="w-12 h-12">
+                <div>
+                    <span class="font-esport text-4xl text-blue-600 leading-none block uppercase italic" id="display-user">PLAYER</span>
+                    <span class="text-[8px] font-black text-gray-500 uppercase tracking-widest">Official Member</span>
+                </div>
             </div>
-            <button onclick="location.reload()" class="text-[10px] font-bold text-gray-500 uppercase border border-white/10 px-4 py-2 rounded-full">Logout</button>
+            <button onclick="location.reload()" class="text-[10px] font-black text-gray-500 border border-white/10 px-6 py-3 rounded-full hover:bg-white/5 transition uppercase">Logout</button>
         </nav>
 
-        <main class="pt-28 px-6 max-w-7xl mx-auto grid lg:grid-cols-12 gap-8">
-            <div class="lg:col-span-8">
-                <h3 class="font-esport text-5xl italic mb-4">Campo di Gioco</h3>
-                <div class="pitch shadow-2xl" id="pitch"></div>
+        <main class="pt-32 pb-10 px-8 max-w-[1600px] mx-auto grid lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-8 space-y-6">
+                <div class="flex justify-between items-end px-2">
+                    <h3 class="font-esport text-5xl italic uppercase tracking-tighter">Lineup Stasera</h3>
+                    <div id="active-mod" class="bg-blue-600/10 text-blue-500 px-4 py-1 rounded-full text-[10px] font-black border border-blue-500/20 uppercase tracking-widest">Modulo: 4-3-3</div>
+                </div>
+                <div class="pitch shadow-2xl shadow-blue-900/10" id="pitch">
+                    <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+                        <img src="Copilot_20260505_223133.png" class="w-80">
+                    </div>
+                </div>
             </div>
 
-            <div class="lg:col-span-4 space-y-6">
-                <div class="bg-neutral-900 p-6 rounded-2xl border border-white/5">
-                    <h4 class="text-xs font-black uppercase text-gray-500 mb-4 tracking-widest">Sei disponibile?</h4>
+            <div class="lg:col-span-4 space-y-8">
+                <div class="bg-neutral-900/50 p-8 rounded-[2rem] border border-white/5">
+                    <h4 class="text-[10px] font-black uppercase text-gray-500 mb-6 tracking-[0.3em] italic">Disponibilità Match</h4>
                     <div class="grid grid-cols-2 gap-4">
-                        <button onclick="sendPresence('PRESENT')" class="bg-green-600 py-3 rounded-lg font-bold uppercase text-[10px]">Presente</button>
-                        <button onclick="sendPresence('ABSENT')" class="bg-red-600 py-3 rounded-lg font-bold uppercase text-[10px]">Assente</button>
+                        <button onclick="savePresence('PRESENT')" class="bg-green-600 hover:bg-green-500 py-4 rounded-2xl font-black uppercase text-xs transition-all shadow-lg shadow-green-900/20">Presente</button>
+                        <button onclick="savePresence('ABSENT')" class="bg-red-600 hover:bg-red-500 py-4 rounded-2xl font-black uppercase text-xs transition-all shadow-lg shadow-red-900/20">Assente</button>
                     </div>
                 </div>
 
-                <div id="admin-box" class="hidden-panel bg-blue-900/10 p-6 rounded-2xl border border-blue-500/20">
-                    <h4 class="font-esport text-3xl text-blue-400 mb-4">Dirigenza</h4>
-                    <div class="space-y-4">
-                        <div class="bg-black/50 p-4 rounded-xl max-h-[150px] overflow-y-auto border border-white/5 text-[10px]" id="presence-list">
-                            Attendendo presenze...
+                <div id="admin-panel" class="hidden-panel bg-blue-600/5 p-8 rounded-[2rem] border border-blue-600/20 shadow-2xl shadow-blue-900/10">
+                    <h4 class="font-esport text-4xl text-blue-500 mb-6 italic uppercase">Pannello Dirigenza</h4>
+                    <div class="space-y-6">
+                        <div class="bg-black/60 p-5 rounded-2xl border border-white/5">
+                            <p class="text-[9px] font-black text-blue-500 uppercase mb-4 tracking-widest">Appello Giocatori:</p>
+                            <div id="admin-presence-list" class="space-y-2 max-h-[200px] overflow-y-auto pr-2 text-xs">
+                                </div>
                         </div>
-                        <select onchange="updatePitch(this.value)" class="w-full bg-black border border-white/10 p-3 rounded-lg text-xs uppercase font-bold">
-                            <option value="433">Modulo: 4-3-3</option>
-                            <option value="352">Modulo: 3-5-2</option>
-                            <option value="442">Modulo: 4-4-2</option>
-                        </select>
+                        <div class="space-y-2">
+                            <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Cambia Formazione:</p>
+                            <select id="mod-selector" onchange="changeFormation(this.value)" class="w-full bg-black border border-white/10 p-4 rounded-xl text-xs font-bold uppercase outline-none focus:border-blue-500">
+                                <option value="433">4 - 3 - 3 (Classico)</option>
+                                <option value="352">3 - 5 - 2 (Offensivo)</option>
+                                <option value="442">4 - 4 - 2 (Standard)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -79,60 +101,62 @@
     </div>
 
     <script>
-        // DATI SUPABASE (SOSTITUISCI SE NECESSARIO)
-        const URL = "https://uewumdudliyzjdhsaxmq.supabase.co";
-        const KEY = "Dnp43PbSGOVw_Qae0mQSXw_AgXLHRvb"; 
-        const _supabase = supabase.createClient(URL, KEY);
+        // CONFIGURAZIONE SUPABASE
+        const SB_URL = "https://uewumdudliyzjdhsaxmq.supabase.co";
+        const SB_KEY = "Dnp43PbSGOVw_Qae0mQSXw_AgXLHRvb";
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        let rosaEA = [];
+        let rosterEA = [];
         let myID = "";
 
-        // 1. SINCRONIZZA ROSA REALE DA EA
-        async function getEARoster() {
+        // 1. CARICAMENTO API EA (STILE PROFESSIONALE)
+        async function syncEA() {
+            const status = document.getElementById('auth-status');
+            const clubId = "48439";
+            const platform = "common-gen5";
             const proxy = "https://api.allorigins.win/get?url=";
-            const target = encodeURIComponent("https://www.ea.com/it-it/games/ea-sports-fc/clubs/member-list?clubId=48439&platform=common-gen5");
-            
+            const eaApi = `https://proclubs.ea.com/api/fc/members/search?platform=${platform}&clubId=${clubId}`;
+
             try {
-                const res = await fetch(proxy + target);
-                const json = await res.json();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(json.contents, "text/html");
+                const response = await fetch(proxy + encodeURIComponent(eaApi));
+                const data = await response.json();
+                const membersData = JSON.parse(data.contents);
                 
-                // Estrae i nomi dei membri (EA usa classi specifiche)
-                const members = doc.querySelectorAll('.MemberTableRow_name__pE60F');
-                rosaEA = Array.from(members).map(m => m.innerText.toLowerCase().trim());
-                
-                document.getElementById('auth-msg').innerText = "Rosa sincronizzata. Pronto all'accesso.";
-                console.log("Rosa EA:", rosaEA);
+                if (membersData && membersData.members) {
+                    rosterEA = membersData.members.map(m => m.name.toLowerCase().trim());
+                    status.innerHTML = "✅ API EA COLLEGATA";
+                    status.className = "text-[10px] text-green-500 font-black uppercase tracking-[0.3em] mt-2 italic";
+                }
             } catch (e) {
-                console.error("Errore Rosa EA:", e);
-                document.getElementById('auth-msg').innerText = "Errore Sincro EA. Accesso forzato attivo.";
+                console.warn("EA API Offline, uso lista fissa.");
+                rosterEA = ["swuegghypep", "lorenzo04072001", "pdamy17", "aesf-maxcacr7", "alessiojjj", "andrea08200309", "angelobada13", "atainol", "cujigen", "erchappo98", "fabio_1995_1", "fkugab", "pcs_gabrox-btw", "scoiattolino13", "str_pietro", "str-domy"];
+                status.innerHTML = "⚠️ MODALITÀ CLUB ATTIVA";
             }
         }
 
-        // 2. GESTIONE ACCESSO
+        // 2. GESTIONE LOGIN
         async function handleAuth() {
             const id = document.getElementById('id-input').value.toLowerCase().trim();
             const pass = document.getElementById('pass-input').value;
 
+            if (!id || !pass) return alert("Inserisci dati!");
+
             if (id === "admin" && pass === "dirigenzapuorc") {
                 myID = "ADMIN";
-                launch();
-                return;
+                return launch();
             }
 
-            // Se la rosa è stata caricata, controlla se l'utente esiste su EA
-            if (rosaEA.length > 0 && !rosaEA.includes(id)) {
-                alert("Non risulti nella rosa ufficiale EA dei LI PUORC!");
-                return;
+            // Controllo se il giocatore esiste nella rosa
+            if (rosterEA.length > 0 && !rosterEA.includes(id)) {
+                return alert("Non sei nella rosa ufficiale dei LI PUORC!");
             }
 
             // Controllo Password su Supabase
             const { data } = await _supabase.from('profili').select('*').eq('id', id).single();
 
             if (!data) {
-                // Registrazione automatica prima volta
-                await _supabase.from('profili').insert([{ id: id, password: pass }]);
+                // Registrazione automatica
+                await _supabase.from('profili').insert([{ id, password: pass }]);
                 myID = id;
                 launch();
             } else if (data.password === pass) {
@@ -146,57 +170,68 @@
         function launch() {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
-            document.getElementById('display-user').innerText = myID.toUpperCase();
+            document.getElementById('display-user').innerText = myID;
             
-            if(myID === "ADMIN") {
-                document.getElementById('admin-box').style.display = 'block';
-                setInterval(loadAdminData, 3000); // Aggiorna presenze ogni 3 secondi
+            if (myID === "ADMIN") {
+                document.getElementById('admin-panel').style.display = 'block';
+                loadPresences();
+                setInterval(loadPresences, 5000);
             }
-            updatePitch("433");
+            changeFormation("433");
         }
 
-        async function sendPresence(status) {
+        // 3. LOGICA PRESENZE
+        async function savePresence(status) {
             await _supabase.from('presenze').upsert({ giocatore: myID, stato: status });
-            alert("Presenza aggiornata con successo!");
+            alert("Stato aggiornato: " + status);
         }
 
-        async function loadAdminData() {
+        async function loadPresences() {
             const { data } = await _supabase.from('presenze').select('*');
-            document.getElementById('presence-list').innerHTML = data.map(p => `
-                <div class="flex justify-between py-1 border-b border-white/5">
-                    <span class="font-bold uppercase">${p.giocatore}</span>
-                    <span class="${p.stato === 'PRESENT' ? 'text-green-500' : 'text-red-500'} font-black">${p.stato}</span>
+            const list = document.getElementById('admin-presence-list');
+            list.innerHTML = data.map(p => `
+                <div class="flex justify-between items-center py-2 border-b border-white/5 uppercase font-bold">
+                    <span>${p.giocatore}</span>
+                    <span class="${p.stato === 'PRESENT' ? 'text-green-500' : 'text-red-500'} text-[9px]">${p.stato}</span>
                 </div>
             `).join('');
         }
 
-        function updatePitch(mod) {
-            const p = document.getElementById('pitch');
-            p.innerHTML = '';
-            let coords = [];
+        // 4. LOGICA CAMPO
+        function changeFormation(mod) {
+            const pitch = document.getElementById('pitch');
+            document.getElementById('active-mod').innerText = "Modulo: " + mod;
+            pitch.innerHTML = '<div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none"><img src="Copilot_20260505_223133.png" class="w-80"></div>';
             
-            if(mod === "433") {
-                coords = [
-                    {t:'90%', l:'50%', r:'POR'}, {t:'70%', l:'30%', r:'DC'}, {t:'70%', l:'70%', r:'DC'},
-                    {t:'75%', l:'10%', r:'TS'}, {t:'75%', l:'90%', r:'TD'}, {t:'45%', l:'50%', r:'CDC'},
-                    {t:'35%', l:'30%', r:'CC'}, {t:'35%', l:'70%', r:'CC'}, {t:'15%', l:'15%', r:'AS'},
-                    {t:'15%', l:'85%', r:'AD'}, {t:'10%', l:'50%', r:'ATT'}
+            let pos = [];
+            if (mod === "433") {
+                pos = [
+                    {t:'90%', l:'50%', r:'GK'}, {t:'72%', l:'32%', r:'DC'}, {t:'72%', l:'68%', r:'DC'},
+                    {t:'75%', l:'12%', r:'TS'}, {t:'75%', l:'88%', r:'TD'}, {t:'48%', l:'50%', r:'CDC'},
+                    {t:'38%', l:'30%', r:'CC'}, {t:'38%', l:'70%', r:'CC'}, {t:'18%', l:'18%', r:'AS'},
+                    {t:'18%', l:'82%', r:'AD'}, {t:'12%', l:'50%', r:'ATT'}
+                ];
+            } else if (mod === "352") {
+                pos = [
+                    {t:'90%', l:'50%', r:'GK'}, {t:'75%', l:'30%', r:'DC'}, {t:'75%', l:'50%', r:'DC'}, {t:'75%', l:'70%', r:'DC'},
+                    {t:'45%', l:'12%', r:'ES'}, {t:'50%', l:'35%', r:'CC'}, {t:'50%', l:'50%', r:'CDC'}, {t:'50%', l:'65%', r:'CC'}, {t:'45%', l:'88%', r:'ED'},
+                    {t:'18%', l:'40%', r:'ATT'}, {t:'18%', l:'60%', r:'ATT'}
                 ];
             }
-            // Puoi aggiungere 352 e 442 qui...
 
-            coords.forEach(c => {
-                p.innerHTML += `
-                    <div class="player-node" style="top:${c.t}; left:${c.l}">
-                        <div class="w-8 h-8 bg-blue-600 rounded-full border-2 border-white mx-auto flex items-center justify-center font-black text-[9px] shadow-lg shadow-blue-900/50">${c.r}</div>
-                        <p class="text-[7px] text-gray-400 font-bold uppercase mt-1">Titolare</p>
+            pos.forEach(p => {
+                pitch.innerHTML += `
+                    <div class="player-node" style="top:${p.t}; left:${p.l}">
+                        <div class="w-10 h-10 bg-blue-700 rounded-full border-2 border-white/80 shadow-2xl flex items-center justify-center font-black text-[10px] mx-auto">${p.r}</div>
+                        <div class="bg-black/80 px-2 py-0.5 rounded mt-1 border border-white/10">
+                            <p class="text-[7px] font-black uppercase text-white truncate">Titolare</p>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        // Avvia Sincronizzazione Rosa al caricamento
-        window.onload = getEARoster;
+        window.onload = syncEA;
     </script>
 </body>
 </html>
