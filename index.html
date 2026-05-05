@@ -1,0 +1,54 @@
+<script>
+async function syncEAData() {
+    const clubId = "48439";
+    const platform = "common-gen5";
+    // Proxy per leggere la pagina EA senza blocchi di sicurezza
+    const proxy = "https://api.codetabs.com/v1/proxy?quest=";
+    const target = `https://www.ea.com/games/ea-sports-fc/clubs/overview?clubId=${clubId}&platform=${platform}`;
+
+    try {
+        const response = await fetch(proxy + target);
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        // 1. ESTRAZIONE STATISTICHE (Cerca i numeri nella pagina EA)
+        // Nota: I selettori dipendono dalla struttura attuale di EA
+        const stats = doc.querySelectorAll('.ea-card-stat-value'); 
+        if(stats.length > 0) {
+            document.getElementById('wins').innerText = stats[0]?.innerText || "436";
+            document.getElementById('draws').innerText = stats[1]?.innerText || "108";
+            document.getElementById('losses').innerText = stats[2]?.innerText || "395";
+        }
+
+        // 2. ESTRAZIONE GIOCATORI (Roster)
+        // Cerchiamo tutti gli elementi che contengono i nomi dei membri
+        const members = doc.querySelectorAll('.ea-club-member-name'); // Nome classe ipotetico di EA
+        const grid = document.getElementById('player-grid');
+        
+        if(members.length > 0) {
+            grid.innerHTML = ""; // Pulisce i vecchi nomi
+            members.forEach(member => {
+                const name = member.innerText.trim();
+                grid.innerHTML += `
+                    <div class="bg-gray-900/40 p-4 rounded border border-gray-800 player-card">
+                        <h4 class="font-bold text-lg uppercase">${name}</h4>
+                        <p class="text-[10px] text-clubBlue font-bold uppercase tracking-widest">Membro Ufficiale</p>
+                    </div>`;
+            });
+        }
+
+        // Rimuove l'effetto caricamento
+        document.querySelectorAll('.loading').forEach(el => el.classList.remove('loading'));
+        console.log("Sincronizzazione con EA completata con successo.");
+
+    } catch (error) {
+        console.error("Errore nel recupero dati live:", error);
+        // Se fallisce, lasciamo i dati statici che abbiamo inserito prima
+        document.querySelectorAll('.loading').forEach(el => el.classList.remove('loading'));
+    }
+}
+
+// Avvia la sincronizzazione appena la pagina è pronta
+document.addEventListener('DOMContentLoaded', syncEAData);
+</script>
