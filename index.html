@@ -1,54 +1,203 @@
-<script>
-async function syncEAData() {
-    const clubId = "48439";
-    const platform = "common-gen5";
-    // Proxy per leggere la pagina EA senza blocchi di sicurezza
-    const proxy = "https://api.codetabs.com/v1/proxy?quest=";
-    const target = `https://www.ea.com/games/ea-sports-fc/clubs/overview?clubId=${clubId}&platform=${platform}`;
-
-    try {
-        const response = await fetch(proxy + target);
-        const html = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
-
-        // 1. ESTRAZIONE STATISTICHE (Cerca i numeri nella pagina EA)
-        // Nota: I selettori dipendono dalla struttura attuale di EA
-        const stats = doc.querySelectorAll('.ea-card-stat-value'); 
-        if(stats.length > 0) {
-            document.getElementById('wins').innerText = stats[0]?.innerText || "436";
-            document.getElementById('draws').innerText = stats[1]?.innerText || "108";
-            document.getElementById('losses').innerText = stats[2]?.innerText || "395";
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LI PUORC (LPC) | Official Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        clubBlue: '#0047AB',
+                        clubDark: '#0a0a0a',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        esport: ['Teko', 'sans-serif'],
+                    }
+                }
+            }
         }
-
-        // 2. ESTRAZIONE GIOCATORI (Roster)
-        // Cerchiamo tutti gli elementi che contengono i nomi dei membri
-        const members = doc.querySelectorAll('.ea-club-member-name'); // Nome classe ipotetico di EA
-        const grid = document.getElementById('player-grid');
-        
-        if(members.length > 0) {
-            grid.innerHTML = ""; // Pulisce i vecchi nomi
-            members.forEach(member => {
-                const name = member.innerText.trim();
-                grid.innerHTML += `
-                    <div class="bg-gray-900/40 p-4 rounded border border-gray-800 player-card">
-                        <h4 class="font-bold text-lg uppercase">${name}</h4>
-                        <p class="text-[10px] text-clubBlue font-bold uppercase tracking-widest">Membro Ufficiale</p>
-                    </div>`;
-            });
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        .font-esport { font-family: 'Teko', sans-serif; text-transform: uppercase; }
+        .bg-stadium {
+            background-image: linear-gradient(rgba(10, 10, 10, 0.8), rgba(10, 10, 10, 0.95)), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80');
+            background-size: cover;
+            background-position: center;
         }
+        .glow-blue { box-shadow: 0 0 20px rgba(0, 71, 171, 0.4); }
+    </style>
+</head>
+<body class="bg-clubDark text-white selection:bg-clubBlue">
 
-        // Rimuove l'effetto caricamento
-        document.querySelectorAll('.loading').forEach(el => el.classList.remove('loading'));
-        console.log("Sincronizzazione con EA completata con successo.");
+    <nav class="border-b border-gray-800 bg-black/90 backdrop-blur-md fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-20">
+            <div class="flex items-center gap-4">
+                <img src="logo.png" alt="LPC" class="w-12 h-12 object-contain" onerror="this.style.display='none'">
+                <span class="font-esport text-4xl font-bold tracking-widest text-white">LI PUORC</span>
+            </div>
+            <div class="hidden md:flex space-x-6 font-esport text-xl">
+                <a href="#stats" class="hover:text-clubBlue transition">Stats</a>
+                <a href="#roster" class="hover:text-clubBlue transition">Roster</a>
+                <a href="#provini" class="hover:text-clubBlue transition">Provini</a>
+            </div>
+            <div class="flex gap-2">
+                <div class="px-3 py-1 bg-clubBlue rounded text-[10px] font-bold uppercase">PRO CLUB</div>
+            </div>
+        </div>
+    </nav>
 
-    } catch (error) {
-        console.error("Errore nel recupero dati live:", error);
-        // Se fallisce, lasciamo i dati statici che abbiamo inserito prima
-        document.querySelectorAll('.loading').forEach(el => el.classList.remove('loading'));
-    }
-}
+    <section class="bg-stadium min-h-screen flex items-center justify-center pt-20">
+        <div class="text-center px-4">
+            <h2 class="text-clubBlue font-bold tracking-[0.3em] text-sm mb-2 uppercase">Official Club Portal</h2>
+            <h1 class="font-esport text-6xl md:text-9xl font-bold mb-4 text-white">
+                FINO ALLA FINE
+            </h1>
+            <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-8">
+                Club nato da poco pronto a crescere per essere il migliore.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 text-xs font-bold uppercase">
+                <span class="border border-gray-700 px-4 py-2 rounded">PC - PS5</span>
+                <span class="border border-gray-700 px-4 py-2 rounded">22:30 - 01:00</span>
+            </div>
+        </div>
+    </section>
 
-// Avvia la sincronizzazione appena la pagina è pronta
-document.addEventListener('DOMContentLoaded', syncEAData);
-</script>
+    <section id="stats" class="py-20 bg-black">
+        <div class="max-w-7xl mx-auto px-4">
+            <h3 class="font-esport text-5xl text-center mb-12">Statistiche Club</h3>
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 text-center">
+                <div class="bg-gray-900 p-6 rounded border border-gray-800">
+                    <div class="text-4xl font-esport font-bold text-green-500">436</div>
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">Vittorie</p>
+                </div>
+                <div class="bg-gray-900 p-6 rounded border border-gray-800">
+                    <div class="text-4xl font-esport font-bold text-yellow-500">108</div>
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">Pareggi</p>
+                </div>
+                <div class="bg-gray-900 p-6 rounded border border-gray-800">
+                    <div class="text-4xl font-esport font-bold text-red-500">395</div>
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">Sconfitte</p>
+                </div>
+                <div class="bg-gray-900 p-6 rounded border border-clubBlue shadow-lg shadow-blue-900/10">
+                    <div class="text-4xl font-esport font-bold">2520</div>
+                    <p class="text-[10px] text-blue-400 uppercase font-bold">Gol Fatti</p>
+                </div>
+                <div class="bg-gray-900 p-6 rounded border border-gray-800">
+                    <div class="text-4xl font-esport font-bold text-gray-400">2373</div>
+                    <p class="text-[10px] text-gray-500 uppercase font-bold">Gol Subiti</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 bg-clubDark border-y border-gray-900">
+        <div class="max-w-5xl mx-auto px-4 grid md:grid-cols-2 gap-8">
+            <div class="p-6 bg-gray-900 rounded-xl relative overflow-hidden border border-red-900/30 font-esport">
+                <span class="absolute top-0 right-0 bg-red-600 px-2 text-[10px] font-bold">LAST MATCH</span>
+                <p class="text-gray-500 mb-2">DPG</p>
+                <div class="flex justify-between items-center text-3xl">
+                    <span>LPC</span>
+                    <span class="text-red-500 font-bold tracking-widest">0 - 4</span>
+                    <span class="text-gray-600">dba club</span>
+                </div>
+            </div>
+            <div class="p-6 bg-gray-900 rounded-xl relative overflow-hidden border border-clubBlue/30 font-esport glow-blue">
+                <span class="absolute top-0 right-0 bg-clubBlue px-2 text-[10px] font-bold">NEXT MATCH</span>
+                <p class="text-gray-500 mb-2">CAMPIONATO NUOVO - 05/05/26 23:30</p>
+                <div class="flex justify-between items-center text-3xl">
+                    <span class="font-bold uppercase italic">LPC</span>
+                    <span class="text-sm text-clubBlue uppercase font-bold">VS</span>
+                    <span class="text-gray-400 uppercase font-bold">SCISSIONISTI</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="roster" class="py-20 bg-black">
+        <div class="max-w-7xl mx-auto px-4">
+            <h3 class="font-esport text-5xl mb-12 border-l-4 border-clubBlue pl-4">Roster (16)</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div class="bg-gray-900 p-4 rounded border border-blue-600/50">
+                    <p class="text-[10px] text-blue-400 font-bold uppercase">Capitano - ATT</p>
+                    <h4 class="text-xl font-bold">Swuegghypep</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-700">
+                    <p class="text-[10px] text-gray-500 font-bold uppercase">Vice - COC</p>
+                    <h4 class="text-xl font-bold">lorenzo04072001</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase">CC</p>
+                    <h4 class="text-lg">AESF-Maxcacr7</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase">DC</p>
+                    <h4 class="text-lg">alessiojjj</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase">DC</p>
+                    <h4 class="text-lg">Andrea08200309</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase">DC</p>
+                    <h4 class="text-lg">angelobada13</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase">DC</p>
+                    <h4 class="text-lg">atainol</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase">DC</p>
+                    <h4 class="text-lg italic">cujigen</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase">DC</p>
+                    <h4 class="text-lg">ErChappo98</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold text-blue-400">Esterno</p>
+                    <h4 class="text-lg">Fabio_1995_1</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold text-blue-400">Esterno</p>
+                    <h4 class="text-lg">fkugab</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase">ATT</p>
+                    <h4 class="text-lg">PCS_Gabrox-btw</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-yellow-600 uppercase font-bold">GK</p>
+                    <h4 class="text-lg">pdamy17</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase">DC</p>
+                    <h4 class="text-lg">scoiattolino13</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase">DC</p>
+                    <h4 class="text-lg">STR_Pietro</h4>
+                </div>
+                <div class="bg-gray-900 p-4 rounded border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase">CC</p>
+                    <h4 class="text-lg">STR-Domy</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="provini" class="py-20 bg-clubDark border-t border-gray-900 text-center">
+        <h3 class="font-esport text-4xl mb-4">Candidati Ora</h3>
+        <p class="text-gray-500 mb-8 max-w-md mx-auto">Valutiamo tutti i ruoli. Requisiti: 16+, microfono e serietà.</p>
+        <button class="bg-clubBlue px-10 py-4 rounded font-bold uppercase tracking-widest hover:scale-105 transition glow-blue">
+            Contatta per il provino
+        </button>
+        <p class="mt-20 text-[10px] text-gray-800 uppercase tracking-widest italic font-bold">LI PUORC CLUB - FINO ALLA FINE</p>
+    </footer>
+
+</body>
+</html>
